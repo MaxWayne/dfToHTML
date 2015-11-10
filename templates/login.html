@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<title>clean break</title>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='structure.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='angucomplete-alt.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='glyphicons-social.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='bootstrap.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='faqStyle.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="static/bower_components/angular-bootstrap/ui-bootstrap-csp.css">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    
+    <!-- JS -->
+    <!-- load angular, nganimate, and ui-router -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular-animate.min.js"></script>
+
+    <script src="static/angucomplete-alt.min.js"></script>
+    <script type="text/javascript" src="static/bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    
+    <script type="text/javascript" src="static/faqApp.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="static/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/bootstrap-select.min.js"></script>
+    <script src="static/jquery.smooth-scroll.min.js"></script>
+    <script src="static/landing.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-63719309-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    
+<style type="text/css">
+
+.panel-group {
+    margin-bottom: 5px !important;
+}
+  
+</style>
+
+    
+</head>
+
+  <body data-spy="scroll" data-target=".header">
+    <!-- <header id="header" class="header navbar navbar-default flowNav head-box"> -->
+    <header class="head-box navbar navbar-default">
+      <div class="container">
+        <div class="row" >
+          <div class="navbar-header">
+            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-1" class="navbar-toggle"><span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+              </button>
+              <a href="{{ url_for('index')}}" class="navbar-brand"> 
+                <span class="head-box-gather">clean break</span>
+                </a>
+          </div>
+          <div id="navbar-collapse-1" class="collapse navbar-collapse">
+            <ul id="nav" class="nav navbar-nav navbar-right">
+              
+              <li><a href="{{ url_for('index')}}">about</a></li>
+              <li class="highlight"><a href="{{ url_for('stories')}}">stories</a></li>
+              {% if current_user %}
+                <li class="highlight"><a href="{{ url_for('profile')}}">profile</a></li>
+              {% endif %}
+              {% if current_user %}
+                <li class="highlight"><a href="{{ url_for('logout')}}">logout</a></li>
+              {% else %}
+                <li class="highlight"><a href="{{ url_for('login')}}">login</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+<body ng-app="faqApp" ng-controller="loginController">
+
+
+
+<div class="container text-center" style="padding-top:100px;">
+
+      <br>
+      <div class="form-group row">
+
+  <form name="loginForm" ng-submit="login()" novalidate>
+  
+  <div class="form-group" ng-class="{ 'has-error' : loginForm.username.$invalid && !loginForm.username.$pristine }">
+    <input type="text" name="username" placeholder="username" class="form-control form-bu" ng-model="loginData.username" required>
+    <p ng-show="loginForm.username.$invalid && !loginForm.username.$pristine" class="help-block">Your username is required.</p>
+  </div>
+
+  <div class="form-group" ng-class="{ 'has-error' : loginForm.pass.$invalid && !loginForm.pass.$pristine }" >
+    <input type="password" name="pass" placeholder="password" class="form-control form-bu" ng-model="loginData.pass" required>
+  </div>
+  <div ng-if="loginStatus < 0">
+      <p style="color:red;">wrong password / username combo</p>
+    </div>
+
+  <button type="submit" class="btn btn-primary btn-lg btn-info btn-block" ng-disabled="loginForm.$invalid">
+  Next section <span class="glyphicons glyphicons-circle-arrow-right"></span>
+  </button>
+
+</form>
+<br>
+<a ui-sref="about">forgot your username / password?</a>
+
+</body>
+

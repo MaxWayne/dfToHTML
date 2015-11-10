@@ -1,0 +1,37 @@
+
+<h2>enter your other addresses...<span class="glyphicons glyphicons-circle-question-mark qGylph" popover-placement="bottom" popover="Your data is protected with bank-level security and 256-bit encryption. Your information will never be shared unless your SO enters a matching record." popover-trigger="mouseenter"></span>
+</h2>
+<br>
+
+
+
+
+
+  <!-- NAME -->
+  <div ng-if="confirmYourEmail > 0">
+    <p style="color:red;">you must confirm your email before you can add more</p>
+  </div>
+  <form name="mulitForm" ng-submit="multiSubmit()" novalidate>
+  <div ng-repeat="email in emails">
+    <input type="email" name="email" placeholder="{[email]}" class="form-control" ng-model="invites[$index]"></div>
+  <a class="btn btn-default btn-sm" ng-click="addEmail()">Add more email addresses</a>
+
+  <div ng-repeat="email in emailsSO">
+    <input type="email" name="email" placeholder="{[email]}" class="form-control" ng-model="invitesSO[$index]"></div>
+  <a class="btn btn-default btn-sm" ng-click="addEmailSO()">Add more email addresses</a>
+
+
+  <button ng-click="multiSubClicked=true" ng-show="!multiSubClicked" type="submit" class="btn btn-primary btn-lg btn-info btn-block">
+  Next section <span class="glyphicons glyphicons-circle-arrow-right"></span>
+  </button>
+
+</form>
+<!-- <div class="row">
+    <a ui-sref="form.confirm" class="btn btn-primary btn-lg btn-info btn-block">
+    Next section <span class="glyphicons glyphicons-circle-arrow-right"></span>
+    </a>
+</div> -->
+
+
+
+

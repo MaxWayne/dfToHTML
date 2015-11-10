@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<title>clean break</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/darkly/bootstrap.min.css"> -->
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='structure.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='angucomplete-alt.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='glyphicons-social.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='bootstrap.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='formStyle.css') }}">
+    <link rel=stylesheet media=screen  type=text/css href="static/bower_components/angular-bootstrap/ui-bootstrap-csp.css">
+    <!-- <link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'> -->
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    
+    <!-- <link rel=stylesheet media=screen  type=text/css href="{{ url_for('static', filename='bootstrap-responsive.css') }}"> -->
+    <!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />  -->
+
+    <!-- JS -->
+    <!-- load angular, nganimate, and ui-router -->
+
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
+
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular-animate.min.js"></script>
+
+    <script src="static/angucomplete-alt.min.js"></script>
+    <script type="text/javascript" src="static/bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    
+    <script type="text/javascript" src="static/formApp.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-63719309-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    
+
+
+    
+</head>
+<body ng-app="formApp">
+
+<div class="container">
+    <div ui-view></div>
+</div>
+
+</body>
+
+
+
+
+    <script type="text/javascript">
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '{{ app_id }}',
+                status     : true,
+                cookie     : true,
+                xfbml      : true
+            });
+
+            FB.Event.subscribe('auth.login', function(response) {
+                window.location = window.location;
+            });
+        };
+
+        // Load the SDK Asynchronously
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/all.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+
+<!-- 
+    <script>
+        document.getElementById('logout').onclick = function() {
+            FB.logout(function(response) { });
+        };
+    </script>
+ -->
+<script>
+    window.fbAsyncInit = function() {
+    FB.init({
+        appId   : '{{ app_id }}',
+        oauth   : true,
+        status  : true, // check login status
+        cookie  : true, // enable cookies to allow the server to access the session
+        xfbml   : true // parse XFBML
+    });
+
+  };
+function fb_login(){
+    FB.login(function(response) {
+
+        if (response.authResponse) {
+            console.log('Welcome!  Fetching your information.... ');
+            //console.log(response); // dump complete info
+            access_token = response.authResponse.accessToken; //get access token
+            user_id = response.authResponse.userID; //get FB UID
+
+            FB.api('/me', function(response) {
+                user_email = response.email; //get user email
+          // you can store this data into your database     
+            // document.location.href = "/form_index#/form/business";   
+            document.location.href = "/get_fb";   
+              
+            });
+
+        } else {
+            //user hit cancel button
+            console.log('User cancelled login or did not fully authorize.');
+
+        }
+    }, {
+        scope: ['email','user_friends']
+    });
+}
+function fb_send(){
+FB.ui({
+  method: 'send',
+  link: 'https://www.gatherins.com/about'
+});
+}
+
+
+(function() {
+    var e = document.createElement('script');
+    e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+    e.async = true;
+    // document.getElementById('fb-root').appendChild(e);
+}());
+</script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-63719309-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</html>

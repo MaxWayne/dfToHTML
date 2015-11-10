@@ -1,0 +1,40 @@
+
+<h2>please enter...<span class="glyphicons glyphicons-circle-question-mark qGylph" popover-placement="bottom" popover="Your data is protected with bank-level security and 256-bit encryption. Your information will never be shared unless your SO enters a matching record." popover-trigger="mouseenter"></span>
+</h2>
+<br>
+
+
+
+
+
+  <!-- NAME -->
+
+<form name="removeForm" ng-submit="removeMe()" novalidate>
+
+  <div class="form-group" ng-class="{ 'has-error' : removeForm.email.$invalid && !removeForm.email.$pristine }">
+    <input type="email" name="email" placeholder="your email" class="form-control" ng-model="removeData.email" required>
+    <p ng-show="removeForm.email.$invalid && !removeForm.email.$pristine" class="help-block">Your email is required.</p>
+  </div>
+  <!-- USERNAME -->
+  <div class="form-group" ng-class="{ 'has-error' : removeForm.pass.$invalid && !removeForm.pass.$pristine }" >
+    <input type="password" name="pass" placeholder="your password" class="form-control" ng-model="removeData.pass" required>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-lg btn-info btn-block" ng-disabled="removeForm.$invalid">
+	Next section <span class="glyphicons glyphicons-circle-arrow-right"></span>
+  </button>
+
+
+</form>
+<!-- <div class="row">
+    <a ui-sref="form.confirm" class="btn btn-primary btn-lg btn-info btn-block">
+    Next section <span class="glyphicons glyphicons-circle-arrow-right"></span>
+    </a>
+</div> -->
+
+
+<br>
+<a href="#">Do you or your SO have multiple email addresses?</a>
+
+
+

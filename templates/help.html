@@ -1,0 +1,73 @@
+{% extends "layout.html" %} 
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+
+<h2>How can we help?</h2>
+<div class="row">
+  <div class="col-md-7" style='margin:20px; padding:10px;'>
+
+<form class="form form-horizontal" method="post" role="form">
+<div class="input-group">
+      <!-- <input type="text" class="form-control" placeholder="Search for..."> -->
+      {{ form.hidden_tag() }}
+      {{ wtf.form_errors(form, hiddens="only") }}
+      {{ form.searchFor(placeholder="Search for...", class="form-control") }}
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="submit">Go!</button>
+      </span>
+    </div><!-- /input-group -->
+
+
+
+        
+    
+</form>
+      
+    <!-- </div> -->
+  <!-- </div> -->
+  <!-- </div> -->
+  <br>
+  <br>
+
+
+
+  <!-- 
+      <form class="form form-horizontal" method="post" role="form">
+      {{ form.hidden_tag() }}
+      {{ wtf.form_errors(form, hiddens="only") }}
+      {{ wtf.form_field(form.searchFor) }}
+      <div class="form-group ">
+   <br>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div> -->
+
+
+
+    <div class="list-group">
+    {% for data in data %}
+      <a href="{{ url_for('help_edit',id=data[0]) }}" class="list-group-item">
+        <h4 class="list-group-item-heading">Question: {{ data[2] }}</h4>
+        <p class="list-group-item-text"> 
+        Details: {{ data[3] }} <br>
+        Category: {{ data[1] }} <br></p>
+        <!-- <a id="sameQ" name = "sameQ" href="#">I have the same question</a> -->
+        <!-- About the company: {{ data[7] }} <br> -->
+      </a>
+    {% endfor %}
+    </div>
+
+  </div>
+  <div class="col-md-4" style="margin:30px; padding:10px; background-color: #f8f8f8;border-color: #e7e7e7;border: 1px solid; border-color: #eee;border-radius: 5px;">
+      <h4>Don't see an answer?</h4>
+      <br>
+      <ul>
+      <li><a href="{{ url_for('help_add') }}">Click here to ask a question (answered same day)</a></li>
+      <li><a href="mailto:{{ helpEmail }}">Click here to send an email (answered same day)</a></li>
+      <li><a href="tel:{{ helpPhone }}">Click here to call us (555-555-5555)</a></li>
+    </ul>
+  </div>
+</div>
+
+{% endblock %}

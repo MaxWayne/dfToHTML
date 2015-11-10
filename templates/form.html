@@ -1,0 +1,32 @@
+
+
+<br>
+<br>
+<div id="form-container">
+      <div class="text-center">
+          <div class="row">
+          <div id="status-buttons" class="text-center">
+          <div class="col-xs-4">
+              <a ng-class="isOnForm3" ui-sref=".info"><span>1</span><a2>info</a2></a>
+          </div>
+          <div class="col-xs-4">
+              <a ng-class="isOnForm" ui-sref=".confirm"><span>2</span><a2>confirm</a2></a>
+           </div>
+          <div class="col-xs-4">
+              <a ng-class="isOnForm2" ui-sref=".next"><span>3</span><a2>next</a2></a>
+            </div>
+          </div>
+      </div>
+      <hr>
+
+      <!-- <form id="signup-form" ng-submit="processForm()"> -->
+      <!-- <form name="userForm" ng-submit="submitForm()" novalidate> -->
+          <!-- our nested state views will be injected here -->
+          <div id="form-views" ui-view></div>
+      <!-- </form> -->
+  
+  </div>
+  </div>
+
+<!-- {[formData]} -->
+
