@@ -18,7 +18,7 @@ from flask_bootstrap import Bootstrap
 from flask_oauthlib.client import OAuth
 from flaskext.uploads import UploadSet, IMAGES, configure_uploads,UploadNotAllowed
 import numpy as np
-
+import json
 from flask_sslify import SSLify
 from time import sleep
 from itsdangerous import URLSafeTimedSerializer
@@ -29,20 +29,6 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.dialects.postgresql import JSON, JSONB
 from Crypto.Cipher import DES
-# from init_db import Faqs
-
-
-# confirm_url = url_for(
-#         'confirm_email',
-#         token=token,
-#         _external=True)
-#     subj = 'confirm your email'
-#     msg = Message(subj,sender='mritchie712@gmail.com',recipients=['mritchie712@gmail.com'])
-#     h1 = "<p> please click the link below to confirm your email address </p> <a href='"
-#     h2 = "'>click it</a>"
-#     h3 = h1 + confirm_url + h2
-#     msg.html = h3
-#     mail.send(msg)
 
 
 def make8(toEncrypt):
@@ -60,6 +46,8 @@ def getMatches(myId):
     myDF = pd.read_sql(sql, db.engine, params={'myId':myId})
     myEmails = myDF[myDF.me==1].ciph.tolist()
     peopleIListed = myDF[myDF.me==0].ciph.tolist()
+    print 'myDF', myDF
+    print 'peopleIListed', peopleIListed
     sql = 'SELECT * FROM multi WHERE me = 1 and "ciph" in %(ciphs)s'
     hitsOnMyList = pd.read_sql(sql, db.engine, params={'ciphs':tuple(peopleIListed)})
     if len(hitsOnMyList) > 0:
@@ -98,15 +86,56 @@ def getMatches(myId):
         return sendEmailsMe2, sendEmailsThem2
     else:
         return None,None
-def sendMatchEmail(you,SO):
-    subj = 'message from clean break'
-    msg = Message(subj,sender='mritchie712@gmail.com',recipients=['mritchie712@gmail.com']) #this becomes you
-    h1 = "<p> the email address below confirmed they wish to part ways, thank you for using clean break.</p><br>"
-    h2 = "<br><br><a href='"
-    h3 = "'>tell your story here</a>"
-    msg.html = h1 + SO + h2 + url_for('stories',_external=True) + h3
-    mail.send(msg)
+# def sendMatchEmail(you,SO):
+#     subj = 'message from CleanBreak'
+#     msg = Message(subj,sender='info@cleanbreak.co',recipients=[you]) #this becomes you
+#     h1 = "<p> the person below independently confirmed your request to break-up. thank you for using CleanBreak.</p><br>"
+#     h2 = "<br><br><a href='"
+#     h3 = "'>tell your story here</a>"
+#     msg.html = h1 + SO + h2 + url_for('stories',_external=True) + h3
+#     mail.send(msg)
+#     return 'success'
+
+def sendEmail(recipient,msgType, SO='you forgot to add one'):
+    sender = DEFAULT_EMAIL_SENDER
+    # subj = 'message from CleanBreak'
+    if msgType == 'match':
+        subject = 'message from CleanBreak'
+        msg = Message(subject,sender=sender,recipients=[recipient]) #this becomes you
+        h1 = "<p> the person below independently confirmed your request to break-up. thank you for using CleanBreak.</p><br>"
+        h2 = "<br><br><a href='"
+        h3 = "'>tell your story here</a>"
+        msg.html = h1 + SO + h2 + url_for('stories',_external=True) + h3
+    elif msgType == 'add':
+        subject = 'confirm your email'
+        token = ts.dumps(recipient, salt=EMAIL_CONFIRM_KEY)
+        confirm_url = url_for(
+            'confirm_email',
+            token=token,
+            _external=True)
+        msg = Message(subject,sender=sender,recipients=[recipient])
+        h1 = "<p> please click the link below to confirm your email address </p> <a href='"
+        h2 = "'>click it</a>"
+        h3 = h1 + confirm_url + h2
+        msg.html = h3
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print 'print e', e
+        try:
+            e2 = e.__dict__
+            e3 = e2['recipients'].values()[0]
+            code = e2['recipients'].values()[0][0]
+            if code == 504:
+                return 'badSOEmail'
+        except:
+            pass
+    except:
+        e = sys.exc_info()[0]
+        print 'round two ', e
     return 'success'
+
+
 
 # configuration
 DEBUG = True
@@ -116,7 +145,8 @@ EMAIL_CONFIRM_KEY = 'eVFz77dDyfhEXjgElogylDm7w'
 UPLOADS_DEFAULT_DEST = 'uploads'
 SQLALCHEMY_DATABASE_URI = "postgresql://mritchie712:Mr084211@localhost/bu"
 BCRYPT_LOG_ROUNDS = 12
-# SQLALCHEMY_DATABASE_URI = "postgresql://super:mr084211@mritchie712-66.postgres.pythonanywhere-services.com:10066/gather"
+DEFAULT_EMAIL_SENDER = 'info@cleanbreak.co'
+# SQLALCHEMY_DATABASE_URI = "postgresql://super:mr084211@mritchie712-66.postgres.pythonanywhere-services.com:10066/cb"
 
 # pyAny
 # UPLOADS_DEFAULT_DEST = 'gather/uploads'
@@ -132,15 +162,29 @@ bcrypt = Bcrypt(app)
 
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
+# app.config.update(
+#     #EMAIL SETTINGS
+#     MAIL_SERVER='smtp.gmail.com',
+#     MAIL_PORT=465,
+#     MAIL_USE_SSL=True,
+#     MAIL_USERNAME = 'mritchie712@gmail.com',
+#     MAIL_PASSWORD = 'mjr084211',
+#     SQLALCHEMY_DATABASE_URI=SQLALCHEMY_DATABASE_URI
+#     )
+
+
 app.config.update(
     #EMAIL SETTINGS
-    MAIL_SERVER='smtp.gmail.com',
+    MAIL_SERVER='mail.privateemail.com',
     MAIL_PORT=465,
     MAIL_USE_SSL=True,
-    MAIL_USERNAME = 'mritchie712@gmail.com',
-    MAIL_PASSWORD = 'mjr084211',
+    MAIL_USERNAME = 'info@cleanbreak.co',
+    MAIL_PASSWORD = 'mr084211',
     SQLALCHEMY_DATABASE_URI=SQLALCHEMY_DATABASE_URI
     )
+
+
+
 
 mail=Mail(app)
 
@@ -214,12 +258,14 @@ class Multi(db.Model):
     __tablename__ = "multi"
     id = db.Column(db.Integer, primary_key=True)
     uId = db.Column(db.Integer())
+    dt = db.Column(db.DateTime())
     ciph = db.Column(db.String())
     origLen = db.Column(db.Integer())
     me = db.Column(db.Integer())
 
-    def __init__(self, uId,origLen,ciph, me):
+    def __init__(self, uId,dt,origLen,ciph, me):
         self.uId = uId
+        self.dt = dt
         self.ciph = ciph
         self.origLen = origLen
         self.me = me
@@ -447,14 +493,22 @@ def confirm_email(token):
     user = AppUsers.query.filter_by(crypEmail=ciph).first()
     user.email_confirmed = 1
     uId = user.id
+    print email, email2, ciph, uId
     db.session.add(user)
     db.session.commit()
     you, SO = getMatches(uId)
     if SO:
         SO = SO[0]
         you = you[0]
-        sendMatchEmail(you, SO)
-        sendMatchEmail(SO, you)
+        res1 = sendEmail(you,'match', SO=SO)
+        res2 = sendEmail(SO,'match', SO=you)
+        if res1 == 'badSOEmail':
+            session['badSOEmail'] = True
+        elif res2 == 'badSOEmail':
+            session['badSOEmail'] = True
+        else:
+            session['badSOEmail'] = None
+
     return redirect(url_for('profile'))
 
 
@@ -467,7 +521,12 @@ def profile():
     dt = user.dt
     # dt = dt.isoformat()
     dt = dt.strftime("%D")
-    return render_template("profile.html", username=username, dt=dt, email_confirmed=email_confirmed, current_user=current_user.username)
+    try:
+        badSOEmail = session['badSOEmail']
+    except:
+        badSOEmail = None
+    print badSOEmail
+    return render_template("profile.html", username=username, dt=dt, email_confirmed=email_confirmed, current_user=current_user.username, badSOEmail=badSOEmail)
 
 @app.route('/remove', methods=["GET", "POST"])
 def remove():
@@ -507,28 +566,17 @@ def add():
     obj2 = DES.new(EMAIL_KEY, DES.MODE_ECB)
     ciph2 = obj2.encrypt(emailSO2)
     ciph2 = ciph2.decode('Latin-1')
-    # uData2={'passXs' : passXs, 'emailXs' : emailXs}
-    # try:
+    sendEmail(email,'add')
     newUser = AppUsers(username=username, password=password, dt=dt, crypEmail=ciph, uData=None)
     db.session.add(newUser)
     db.session.commit()
     login_user(newUser, remember=True)
     #send email
-    token = ts.dumps(email, salt=EMAIL_CONFIRM_KEY)
-    confirm_url = url_for(
-        'confirm_email',
-        token=token,
-        _external=True)
-    subj = 'confirm your email'
-    msg = Message(subj,sender='mritchie712@gmail.com',recipients=['mritchie712@gmail.com'])
-    h1 = "<p> please click the link below to confirm your email address </p> <a href='"
-    h2 = "'>click it</a>"
-    h3 = h1 + confirm_url + h2
-    msg.html = h3
-    mail.send(msg)
+    
     uId = current_user.id
     newMulti = Multi(
                     uId=uId,
+                    dt=dt,
                     ciph=ciph,
                     origLen = emailLen,
                     me=1
@@ -537,6 +585,7 @@ def add():
     db.session.commit()
     newMulti = Multi(
                     uId=uId,
+                    dt=dt,
                     ciph=ciph2,
                     origLen = emailSOLen,
                     me=0
@@ -550,26 +599,14 @@ def readd():
     uData = request.get_json()
     print uData
     email = uData['email']
-    token = ts.dumps(email, salt=EMAIL_CONFIRM_KEY)
-    confirm_url = url_for(
-        'confirm_email',
-        token=token,
-        _external=True)
-    subj = 'confirm your email'
-    msg = Message(subj,sender='mritchie712@gmail.com',recipients=['mritchie712@gmail.com'])
-    h1 = "<p> please click the link below to confirm your email address </p> <a href='"
-    h2 = "'>click it</a>"
-    h3 = h1 + confirm_url + h2
-    msg.html = h3
-    mail.send(msg)
+    sendEmail(email,'add')
     return '{"status" : 200}'
 
 @app.route('/multi',methods=['GET','POST'])
 @login_required
 def multi():
     multi = request.get_json()
-    print multi
-    print multi[0]
+    dt = datetime.datetime.utcnow()
     if current_user.email_confirmed <1:
         print 'hit the error#########################'
         return  '{ "status" : "emailNotConfirmed" }'
@@ -602,6 +639,7 @@ def multi():
             ciph = ciph.decode('Latin-1')
             newMulti = Multi(
                             uId=uId,
+                            dt = dt,
                             ciph=ciph,
                             origLen = emailLen,
                             me=0
@@ -613,8 +651,8 @@ def multi():
         if SO:
             SO = SO[0]
             you = you[0]
-            sendMatchEmail(you, SO)
-            sendMatchEmail(SO, you)
+            sendEmail(you,'match', SO=SO)
+            sendEmail(SO,'match', SO=you)
         return '{ "status" : "good" }'
 
 @app.route('/post_story',methods=['GET','POST'])
@@ -668,6 +706,7 @@ def post_votes():
 
 @app.route('/sql')
 def sql():
+    print session['badSOEmail']
 
     # appls = Appls.query.all()
     # data = Appls.query.all()
@@ -679,12 +718,12 @@ def sql():
     # user = AppUsers.query.filter_by(username=username).first()
     # uId = user.id
     # myRecords = Multi.query.filter_by(uId=uId).all()
-    myId = current_user.id
+    # myId = current_user.id
     
-    you, SO = getMatches(myId)
-    SO = SO[0]
-    you = you[0]
-    sendMatchEmail(you, SO)
+    # you, SO = getMatches(myId)
+    # SO = SO[0]
+    # you = you[0]
+    # sendMatchEmail(you, SO)
 
     return render_template('sql.html')
 if __name__ == '__main__':

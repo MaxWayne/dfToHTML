@@ -2,7 +2,7 @@ import datetime
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON, JSONB
 import json
-from bu import db, Faqs, Stories, AppUsers
+from cb import db, Faqs, Stories, AppUsers
 
 
 def init_db():

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>clean break</title>
+<title>CleanBreak</title>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -63,7 +63,7 @@
             <span class="icon-bar"></span>
               </button>
               <a href="{{ url_for('index')}}" class="navbar-brand"> 
-                <span class="head-box-gather">clean break</span>
+                <span class="head-box-gather">CleanBreak</span>
                 </a>
           </div>
           <div id="navbar-collapse-1" class="collapse navbar-collapse">
@@ -99,6 +99,9 @@
 <p>date joined: {{dt}}</p>
 {% if email_confirmed > 0 %}
 <p>email: confirmed</p>
+{% if badSOEmail %}
+<p style="color:red;">you entered an invalid email address for your SO</p>
+{% endif %}
 
   <a href="{{ url_for('stories')}}" class="btn btn-primary btn-lg btn-info btn-block">visit stories</a>
 want to share your story or hear stories from others?

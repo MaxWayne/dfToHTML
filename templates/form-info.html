@@ -19,9 +19,11 @@
   </div>
 
   <div class="form-group" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
-    <input type="email" name="email" placeholder="your email" class="form-control" ng-model="formData.email" required>
+    <input type="email" name="email" placeholder="your email" class="form-control" ng-model="formData.email" 
+    ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
     <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Your email is required.</p>
   </div>
+  <!-- <div ng-message="pattern">Please enter a valid email address!</div> -->
   <!-- USERNAME -->
   <div class="form-group" ng-class="{ 'has-error' : userForm.pass.$invalid && !userForm.pass.$pristine }" >
     <input type="password" name="pass" placeholder="your password" class="form-control" ng-model="formData.pass" required>
