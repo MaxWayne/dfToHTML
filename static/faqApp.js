@@ -138,7 +138,7 @@ app.controller('loginController', function($scope,$http,$log,$location, $state, 
       }).then(function(result) {
         loginStatus = result.data['loginStatus'];
         $scope.loginStatus = loginStatus;
-        // console.log("login status", loginStatus);
+        console.log("login status", loginStatus);
         if (loginStatus > 0) {
           // console.log("send to somewhere ", loginStatus);
           $window.location.assign('/stories');

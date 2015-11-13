@@ -2,6 +2,7 @@
 import sqlite3
 import datetime
 import os
+import ast
 import pandas as pd
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash,jsonify, send_file
@@ -46,8 +47,6 @@ def getMatches(myId):
     myDF = pd.read_sql(sql, db.engine, params={'myId':myId})
     myEmails = myDF[myDF.me==1].ciph.tolist()
     peopleIListed = myDF[myDF.me==0].ciph.tolist()
-    print 'myDF', myDF
-    print 'peopleIListed', peopleIListed
     sql = 'SELECT * FROM multi WHERE me = 1 and "ciph" in %(ciphs)s'
     hitsOnMyList = pd.read_sql(sql, db.engine, params={'ciphs':tuple(peopleIListed)})
     if len(hitsOnMyList) > 0:
@@ -58,30 +57,22 @@ def getMatches(myId):
         sendEmailsThemIds = whatTheyListed.uId.unique().tolist()
         sendEmailsThem = hitsOnMyList[hitsOnMyList.uId.isin(sendEmailsThemIds)][['origLen','ciph']].to_dict(orient='records')
         sendEmailsMe = whatTheyListed[['origLen','ciph']].to_dict(orient='records')
-        print sendEmailsThem
-        print sendEmailsMe
         obj = DES.new(EMAIL_KEY, DES.MODE_ECB)
         sendEmailsThem2=[]
         for ciphd in sendEmailsThem:
             ciphd2 = ciphd['ciph']
             ciphd2 = ciphd2.encode('Latin-1')
-            print ciphd2
             decryptd = obj.decrypt(ciphd2)
             origLen = ciphd['origLen']
-            print decryptd
             decryptd = decryptd[:origLen]
-            print decryptd
             sendEmailsThem2.append(decryptd)
         sendEmailsMe2=[]
         for ciphd in sendEmailsMe:
             ciphd2 = ciphd['ciph']
             ciphd2 = ciphd2.encode('Latin-1')
-            print ciphd2
             decryptd = obj.decrypt(ciphd2)
             origLen = ciphd['origLen']
-            print decryptd
             decryptd = decryptd[:origLen]
-            print decryptd
             sendEmailsMe2.append(decryptd)
         return sendEmailsMe2, sendEmailsThem2
     else:
@@ -143,10 +134,12 @@ SECRET_KEY = 'WbKJyaTPCaMBEsOub0EDLaeNoTblNSinLDGaI8ky6PXvPyqdGw'
 EMAIL_KEY = 'WcCkh7lh'
 EMAIL_CONFIRM_KEY = 'eVFz77dDyfhEXjgElogylDm7w'
 UPLOADS_DEFAULT_DEST = 'uploads'
-SQLALCHEMY_DATABASE_URI = "postgresql://mritchie712:Mr084211@localhost/bu"
 BCRYPT_LOG_ROUNDS = 12
 DEFAULT_EMAIL_SENDER = 'info@cleanbreak.co'
+# if '/usr/local/bin' in sys.path:
 # SQLALCHEMY_DATABASE_URI = "postgresql://super:mr084211@mritchie712-66.postgres.pythonanywhere-services.com:10066/cb"
+# else:
+SQLALCHEMY_DATABASE_URI = "postgresql://mritchie712:Mr084211@localhost/bu"
 
 # pyAny
 # UPLOADS_DEFAULT_DEST = 'gather/uploads'
@@ -414,32 +407,29 @@ def route_templates(template):
 
 @app.route('/search_faq')
 def search_faq():
-    # df = pd.read_sql(('SELECT title, "descriptionStr" from faqs'),db.engine)
     faqLs=[]
     faqs = db.session.query(Faqs).all()
     for faq in faqs:
-        # print faq.details
-        faqLs.append(faq.details)
-    # return jsonify(faqLs)
+        faq.details = str(faq.details)
+        details2 = ast.literal_eval(faq.details)
+        faqLs.append(details2)
     return json.dumps(faqLs)
-    # return 'asfasdf'
 
 @app.route('/search_stories')
 def search_stories():
-    # df = pd.read_sql(('SELECT title, "descriptionStr" from faqs'),db.engine)
     faqLs=[]
     faqs = db.session.query(Stories).all()
     for faq in faqs:
-        faq.details['id'] = faq.id
-        story = faq.details['story']
+        faq.details = str(faq.details)
+        details2 = ast.literal_eval(faq.details)
+        details2['id'] = faq.id
+        story = details2['story']
         maxLen=30
         if len(story) > maxLen:
-            faq.details['title'] = story[:maxLen] + '...'
-        faqLs.append(faq.details)
-    # return jsonify(faqLs)
+            details2['title'] = story[:maxLen] + '...'
+        faqLs.append(details2)
     print faqLs
     return json.dumps(faqLs)
-    # return 'asfasdf'
 
 @app.route('/get_user')
 def get_user():
@@ -458,15 +448,15 @@ def login():
 @app.route('/login_req',methods=['GET','POST'])
 def login_req():
     uData = request.get_json()
-    print uData
     username = uData['username']
     password = uData['pass']
     user = AppUsers.query.filter_by(username=username).first()
-    if user.is_correct_password(password):
+    if not user:
+        return '{ "loginStatus" : -1 }'
+    elif user.is_correct_password(password):
         login_user(user)
     else:
         return '{ "loginStatus" : -1 }'
-    print current_user.username
     return '{ "loginStatus" : 1 }'
 
 @app.route("/logout", methods=["GET"])
@@ -493,7 +483,7 @@ def confirm_email(token):
     user = AppUsers.query.filter_by(crypEmail=ciph).first()
     user.email_confirmed = 1
     uId = user.id
-    print email, email2, ciph, uId
+    # print email, email2, ciph, uId
     db.session.add(user)
     db.session.commit()
     you, SO = getMatches(uId)
@@ -525,7 +515,6 @@ def profile():
         badSOEmail = session['badSOEmail']
     except:
         badSOEmail = None
-    print badSOEmail
     return render_template("profile.html", username=username, dt=dt, email_confirmed=email_confirmed, current_user=current_user.username, badSOEmail=badSOEmail)
 
 @app.route('/remove', methods=["GET", "POST"])
@@ -597,7 +586,6 @@ def add():
 @app.route('/readd',methods=['GET','POST'])
 def readd():
     uData = request.get_json()
-    print uData
     email = uData['email']
     sendEmail(email,'add')
     return '{"status" : 200}'
@@ -611,7 +599,6 @@ def multi():
         print 'hit the error#########################'
         return  '{ "status" : "emailNotConfirmed" }'
     else:
-        print 'going thru this now'
         username = current_user.username
         user = AppUsers.query.filter_by(username=username).first()
         uId = user.id
@@ -658,7 +645,6 @@ def multi():
 @app.route('/post_story',methods=['GET','POST'])
 def post_story():
     story = request.get_json()
-    print story
     username = current_user.username
     dt = datetime.datetime.utcnow()
     story['upvotes'] = 1
