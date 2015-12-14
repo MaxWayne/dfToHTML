@@ -1,4 +1,40 @@
-
-{% block body %}
-  <h2>Login</h2>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CleanBreak</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <!-- CSS -->
+    <link href="{{ url_for('static', filename='structure.css') }}" media=
+    "screen" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='bootstrap.css') }}" media=
+    "screen" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='faqStyle.css') }}" media=
+    "screen" rel="stylesheet" type="text/css">
+</head>
+<body data-spy="scroll" data-target=".header">
+    <header class="head-box navbar navbar-default">
+        <div class="container">
+            <div class="row">
+                <div class="navbar-header">
+                    <button class="navbar-toggle" data-target=
+                    "#navbar-collapse-1" data-toggle="collapse" type=
+                    "button"><span class="icon-bar"></span> <span class=
+                    "icon-bar"></span> <span class="icon-bar"></span></button>
+                    <a class="navbar-brand" href=
+                    "{{url_for('index')}}"><span class="head-box-gather">DF
+                    to HTML</span></a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container" style="padding-top:100px;">
+        <br>
+        <div class="form-group row">
+            <div style="padding-top:20px;">
+            <!-- INSERT YOUR DATAFRAME HERE -->
+                {{metricsH | safe}}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

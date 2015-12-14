@@ -1,1 +1,0 @@
-/Users/mritchie712/anaconda/lib/python2.7/os.py

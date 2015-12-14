@@ -9,6 +9,7 @@ Flask-Uploads==0.1.3
 Flask-OAuthlib==0.8.0
 Flask-WTF == 0.9.5
 Flask-SSLify == 0.1.5
+Flask-Bcrypt==0.7.1
 pyzipcode==0.4
 pandas==0.16.2
 psycopg2==2.6.1
