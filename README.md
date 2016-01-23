@@ -1,4 +1,4 @@
-# df to HTML
+# DF to HTML
 - cd into the dir where you downloaded dfToHTML
 - virtualenv venv (if you don't have it, sudo pip install virtualenv)
 - . venv/bin/activate
